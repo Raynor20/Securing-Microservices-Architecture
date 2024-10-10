@@ -1,0 +1,56 @@
+http:
+  port: 3000
+admin:
+  port: 3004
+
+apiEndpoints:
+  userApi:
+    host: '*'
+    paths:
+      - /customers/*
+  productApi:
+    host: '*'
+    paths:
+      - /products/*
+  orderApi:
+    host: '*'
+    paths:
+      - /orders/*
+
+serviceEndpoints:
+  userService:
+    url: 'http://localhost:3002'  # PORT SA CUSTOMER
+  productService:
+    url: 'http://localhost:3001'  # PORT SA PRODUCT
+  orderService:
+    url: 'http://localhost:3003'  # PORT SA ORDERS!
+
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+
+pipelines:
+  default:
+    apiEndpoints:
+      - userApi
+      - productApi
+      - orderApi
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: userService
+              changeOrigin: true
+      - proxy:
+          - action:
+              serviceEndpoint: productService
+              changeOrigin: true
+      - proxy:
+          - action:
+              serviceEndpoint: orderService
+              changeOrigin: true
